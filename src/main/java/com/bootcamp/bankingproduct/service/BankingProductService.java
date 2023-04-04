@@ -10,4 +10,8 @@ public interface BankingProductService {
     Mono<BankingProduct> findById(String id);
 
     Mono<BankingProduct> save(BankingProduct bankingProduct);
+
+    Mono<BankingProduct> updateProduct(BankingProduct bankingProduct, String idProduct);
+
+    Mono<BankingProduct> deleteProduct(String idProduct);
 }

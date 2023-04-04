@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Service
 public class BankingProductImpl implements BankingProductService {
     @Autowired
@@ -25,5 +27,27 @@ public class BankingProductImpl implements BankingProductService {
     @Override
     public Mono<BankingProduct> save(BankingProduct bankingProduct) {
         return bankingProductRepository.save(bankingProduct);
+    }
+
+    @Override
+    public Mono<BankingProduct> updateProduct(BankingProduct bankingProduct, String idProduct) {
+        return bankingProductRepository.findById(idProduct)
+                .flatMap(currentProduct -> {
+                    currentProduct.setProductTypeCode(bankingProduct.getProductTypeCode());
+                    currentProduct.setProductCategory(bankingProduct.getProductCategory());
+                    currentProduct.setProductName(bankingProduct.getProductName());
+                    currentProduct.setMaintenance(bankingProduct.getMaintenance());
+                    currentProduct.setMovementLimit(bankingProduct.getMovementLimit());
+                    currentProduct.setTransactionFee(bankingProduct.getTransactionFee());
+                    currentProduct.setUpdateDatetime(LocalDateTime.now());
+                    return bankingProductRepository.save(currentProduct);
+                });
+    }
+
+    @Override
+    public Mono<BankingProduct> deleteProduct(String idProduct) {
+        return bankingProductRepository.findById(idProduct)
+                .flatMap(existingProduct -> bankingProductRepository.delete(existingProduct)
+                        .then(Mono.just(existingProduct)));
     }
 }
